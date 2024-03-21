@@ -12,6 +12,7 @@ services:
         traefik.http.routers.dozzlesecured.rule: Host(`dozzle.clashleaders.com`)
         traefik.http.routers.dozzlesecured.entrypoints: websecure
         traefik.http.routers.dozzlesecured.tls.certresolver: myresolver
+        traefik.http.services.dozzlesecured.loadbalancer.server.port: 8080
 
         traefik.http.middlewares.https_redirect.redirectscheme.scheme: https
         traefik.http.middlewares.https_redirect.redirectscheme.permanent: 'true'

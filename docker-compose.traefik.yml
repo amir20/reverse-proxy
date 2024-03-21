@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   traefik:
-    image: traefik:v2.2
+    image: traefik:v2.9.1
     command:
       - --api.insecure=true
       - --api.dashboard=true
