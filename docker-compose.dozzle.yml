@@ -16,7 +16,7 @@ services:
 
         traefik.http.middlewares.https_redirect.redirectscheme.scheme: https
         traefik.http.middlewares.https_redirect.redirectscheme.permanent: 'true'
-    image: amir20/dozzle:v2.1.1
+    image: amir20/dozzle:latest
     networks:
       - web
     volumes:
