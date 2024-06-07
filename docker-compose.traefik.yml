@@ -1,21 +1,14 @@
-version: "3.3"
-
 services:
   traefik:
-    image: traefik:v2.9.1
+    image: traefik:v3.0.1
     command:
       - --api.insecure=true
       - --api.dashboard=true
-      # - --api.debug=true
-      # - --log.level=DEBUG
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-      - --providers.docker.swarmMode=true
-      - --providers.docker.network=web
+      - --providers.swarm.exposedbydefault=false
+      - --providers.swarm.endpoint=unix:///var/run/docker.sock
+      - --providers.swarm.network=web
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
-      # - --certificatesresolvers.myresolver.acme.dnschallenge=true
-      # - --certificatesresolvers.myresolver.acme.dnschallenge.provider=digitalocean
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesresolvers.myresolver.acme.email=findamir@gmail.com
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
@@ -31,8 +24,6 @@ services:
       - target: 8080
         published: 8080
         protocol: tcp
-    # environment:
-    #   - DO_AUTH_TOKEN
     networks:
       - web
     volumes:
