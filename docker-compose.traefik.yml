@@ -1,17 +1,18 @@
 services:
   traefik:
-    image: traefik:v3.0.1
+    image: traefik:v3.6
     command:
-      - --api.insecure=true
-      - --api.dashboard=true
       - --providers.swarm.exposedbydefault=false
       - --providers.swarm.endpoint=unix:///var/run/docker.sock
       - --providers.swarm.network=web
       - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.websecure.address=:443
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesresolvers.myresolver.acme.email=findamir@gmail.com
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      - --log.level=WARN
     ports:
       - target: 80
         published: 80
@@ -21,14 +22,19 @@ services:
         published: 443
         protocol: tcp
         mode: host
-      - target: 8080
-        published: 8080
-        protocol: tcp
     networks:
       - web
     volumes:
-      - /data/letsencrypt:/letsencrypt
+      - letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+volumes:
+  letsencrypt:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /data/letsencrypt
 
 networks:
   web:
