@@ -8,10 +8,23 @@ services:
         traefik.http.routers.dozzle.tls.certresolver: myresolver
         traefik.http.services.dozzle.loadbalancer.server.port: 8080
     image: amir20/dozzle:latest
+    environment:
+      - DOZZLE_AUTH_PROVIDER=simple
     networks:
       - web
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    configs:
+      - source: users
+        target: /data/users.yml
+
+configs:
+  users:
+    content: |
+      users:
+        admin:
+          name: amirraminfar
+          password: $$2a$$11$$JUsEcGHf..z/2bNTYrwaF.mAZoGcmt4q.5pHzueY3.JoqRsedk/wy
 
 networks:
   web:
