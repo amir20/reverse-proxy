@@ -20,11 +20,7 @@ services:
 
 configs:
   users:
-    content: |
-      users:
-        admin:
-          name: amirraminfar
-          password: $$2a$$11$$JUsEcGHf..z/2bNTYrwaF.mAZoGcmt4q.5pHzueY3.JoqRsedk/wy
+    file: ./users.yml
 
 networks:
   web:
