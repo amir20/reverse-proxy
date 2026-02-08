@@ -1,26 +1,18 @@
-version: "3.8"
-
 services:
   dozzle:
     deploy:
       labels:
-        traefik.enable: 'true'
-        traefik.http.routers.dozzle.rule: Host(`dozzle.clashleaders.com`)
-        traefik.http.routers.dozzle.entrypoints: web
-        traefik.http.routers.dozzle.middlewares: https_redirect
-
-        traefik.http.routers.dozzlesecured.rule: Host(`dozzle.clashleaders.com`)
-        traefik.http.routers.dozzlesecured.entrypoints: websecure
-        traefik.http.routers.dozzlesecured.tls.certresolver: myresolver
-        traefik.http.services.dozzlesecured.loadbalancer.server.port: 8080
-
-        traefik.http.middlewares.https_redirect.redirectscheme.scheme: https
-        traefik.http.middlewares.https_redirect.redirectscheme.permanent: 'true'
+        traefik.enable: "true"
+        traefik.http.routers.dozzle.rule: Host(`cloudlogs.dozzle.dev`)
+        traefik.http.routers.dozzle.entrypoints: websecure
+        traefik.http.routers.dozzle.tls.certresolver: myresolver
+        traefik.http.services.dozzle.loadbalancer.server.port: 8080
     image: amir20/dozzle:latest
     networks:
       - web
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
 networks:
   web:
     external: true
