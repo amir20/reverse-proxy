@@ -6,9 +6,11 @@ services:
       - --providers.swarm.endpoint=unix:///var/run/docker.sock
       - --providers.swarm.network=web
       - --entrypoints.web.address=:80
+      - --entrypoints.web.forwardedHeaders.insecure=true
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.forwardedHeaders.insecure=true
       - --entrypoints.websecure.http3
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesresolvers.myresolver.acme.email=findamir@gmail.com
