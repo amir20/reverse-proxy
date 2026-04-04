@@ -11,6 +11,10 @@ services:
       - --entrypoints.websecure.address=:443
       - --entrypoints.websecure.http3
       - --entrypoints.websecure.transport.respondingTimeouts.idleTimeout=0
+      - --entrypoints.websecure.transport.respondingTimeouts.readTimeout=0
+      - --entrypoints.websecure.transport.respondingTimeouts.writeTimeout=0
+      - --serversTransport.forwardingTimeouts.idleConnTimeout=0
+      - --serversTransport.forwardingTimeouts.responseHeaderTimeout=0
       - --certificatesresolvers.myresolver.acme.tlschallenge=true
       - --certificatesresolvers.myresolver.acme.email=findamir@gmail.com
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
