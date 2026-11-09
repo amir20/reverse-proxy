@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.6
+    image: traefik:v3.7
     command:
       - --providers.swarm.exposedbydefault=false
       - --providers.swarm.endpoint=unix:///var/run/docker.sock
@@ -10,6 +10,7 @@ services:
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.websecure.address=:443
       - --entrypoints.websecure.http3
+      - --entrypoints.websecure.proxyProtocol.trustedIPs=10.0.1.0/24
       - --entrypoints.websecure.transport.respondingTimeouts.idleTimeout=0
       - --entrypoints.websecure.transport.respondingTimeouts.readTimeout=0
       - --entrypoints.websecure.transport.respondingTimeouts.writeTimeout=0
@@ -26,10 +27,6 @@ services:
         mode: host
       - target: 443
         published: 443
-        protocol: tcp
-        mode: host
-      - target: 443
-        published: 443
         protocol: udp
         mode: host
     networks:
@@ -38,6 +35,38 @@ services:
       - letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
+  haproxy:
+    image: haproxy:3.4.7-alpine
+    entrypoint: ["sh", "/usr/local/etc/haproxy/entrypoint.sh"]
+    ports:
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+    networks:
+      - web
+    configs:
+      - source: haproxy_cfg_v1
+        target: /usr/local/etc/haproxy/haproxy.cfg
+      - source: haproxy_entrypoint_v1
+        target: /usr/local/etc/haproxy/entrypoint.sh
+    volumes:
+      - certs:/certs:ro
+
+  certs:
+    image: ldez/traefik-certs-dumper:v2.11.4
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        exec traefik-certs-dumper file --version v3 --source /letsencrypt/acme.json --dest /dump --domain-subdir --watch --post-hook /certs-hook.sh
+    configs:
+      - source: certs_hook_v1
+        target: /certs-hook.sh
+        mode: 0555
+    volumes:
+      - letsencrypt:/letsencrypt:ro
+      - certs:/certs
+
 volumes:
   letsencrypt:
     driver: local
@@ -45,7 +74,16 @@ volumes:
       type: none
       o: bind
       device: /data/letsencrypt
+  certs:
 
 networks:
   web:
     external: true
+
+configs:
+  haproxy_cfg_v1:
+    file: ./haproxy/haproxy.cfg
+  haproxy_entrypoint_v1:
+    file: ./haproxy/entrypoint.sh
+  certs_hook_v1:
+    file: ./haproxy/certs-hook.sh
