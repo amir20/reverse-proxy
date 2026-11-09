@@ -58,8 +58,6 @@ services:
     entrypoint: ["sh", "-c"]
     command:
       - |
-        traefik-certs-dumper file --version v3 --source /letsencrypt/acme.json --dest /dump --domain-subdir
-        /certs-hook.sh
         exec traefik-certs-dumper file --version v3 --source /letsencrypt/acme.json --dest /dump --domain-subdir --watch --post-hook /certs-hook.sh
     configs:
       - source: certs_hook_v1
